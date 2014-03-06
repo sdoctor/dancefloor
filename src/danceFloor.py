@@ -7,6 +7,7 @@ __author__="sdrakeley"
 __date__ ="$Feb 20, 2014 8:33:20 PM$"
 
 import pygame
+import sys
 
 
 class Floor:
@@ -93,12 +94,32 @@ if __name__ == "__main__":
     floor.set_active(0, 2)
     print floor.display(2)
     
-    
     windowSurf = pygame.display.set_mode((640, 480))
-    windowSurf.fill(pygame.Color(255,255,255))
-    pygame.draw.polygon(windowSurf, pygame.Color(0,255,0), ((146,0), (291,106), (236,277), (56,277), (0,106)))
+    while True:
+        windowSurf.fill(pygame.Color(255,255,255))
+        pygame.draw.polygon(windowSurf, pygame.Color(0, 255, 0), ((146, 0), 
+                                                                  (291, 106), 
+                                                                  (236, 277), 
+                                                                  (56, 277), 
+                                                                  (0, 106)))
+        pixArray = pygame.PixelArray(windowSurf)
+        for x in range(100, 200, 4):
+            for y in range(100, 200, 4):
+                pixArray[x][y] = pygame.Color(255, 0, 0)
+                
+        del pixArray
+        
+        
+        for event in pygame.event.get():
+            pass
+            #if event.type == pygame.locals.QUIT:
+            #    pygame.quit()
+            #    sys.exit()
+        
+        print sys.version 
+        
+        pygame.display.update()
     
+        
+
     
-    
-    import sys
-    print sys.version 

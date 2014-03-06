@@ -7,7 +7,7 @@ __author__="sdrakeley"
 __date__ ="$Feb 20, 2014 8:33:20 PM$"
 
 import pygame
-from pygame.locals import QUIT
+from pygame.locals import QUIT, MOUSEMOTION
 import sys
 
 
@@ -24,6 +24,13 @@ class Floor:
         self.rows = []
         for pitch in range(0, self.num_rows):
             self.rows.append(Row(num_seconds, pitch))
+        
+    def get_moused_tile(self, x, y):
+        for row in self.rows:
+            if row.is_mouse_in_row(x, y):
+                for tile in row.tiles:
+                    if tile.mouse_in_tile(x, y):
+                        tile.set_active()
         
     def display(self, time):
         display_str = ""
@@ -48,12 +55,18 @@ class Row:
     def __init__(self, num_seconds, pitch):
         self.pitch = pitch
         self.num_tiles = num_seconds
+        self.y_start = self.pitch*55+10
+        self.height = 50
         self.tiles = []
         for s in range(0, num_seconds):
             self.tiles.append(Tile(self.pitch, s))
             
     def set_active(self, time):
         self.tiles[time].set_active()
+        
+    def is_mouse_in_row(self, x, y):
+        if y > self.y_start and y < self.y_start + 50:
+            return True
         
     def display(self, time):
         display_str = ""
@@ -75,6 +88,10 @@ class Tile:
         self.is_active = False
         self.active_color = pygame.Color(200, 200, 200)
         self.inactive_color = pygame.Color(100, 100, 100)
+        self.x_start = self.time*55+10
+        self.y_start = self.pitch*55+10
+        self.width = 50
+        self.height = 50
         
     def set_active(self):
         self.is_active = True
@@ -84,6 +101,13 @@ class Tile:
         
     def get_pitch(self):
         return self.pitch
+    
+    def mouse_in_tile(self, x, y):
+        if x > self.x_start and x < (self.x_start + self.width):
+            if y > self.y_start and y < (self.y_start + self.height):
+                return True
+        else:
+            return False
     
     def display(self, time):
         if self.time == time and self.is_active:
@@ -96,7 +120,7 @@ class Tile:
         """
         cur_color = self.active_color if self.is_active else self.inactive_color
         pygame.draw.rect(windowSurf, cur_color, 
-                        (self.time*55+10, self.pitch*55+10, 50, 50))
+                        (self.x_start, self.y_start, self.width, self.height))
 
 
 if __name__ == "__main__":
@@ -140,6 +164,11 @@ if __name__ == "__main__":
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+                
+            elif event.type == MOUSEMOTION:
+                mousex, mousey = event.pos
+                floor.get_moused_tile(mousex, mousey)
+                
          
         
         pygame.display.update()

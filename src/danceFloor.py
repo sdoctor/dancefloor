@@ -7,6 +7,7 @@ __author__="sdrakeley"
 __date__ ="$Feb 20, 2014 8:33:20 PM$"
 
 import pygame
+from pygame.locals import QUIT
 import sys
 
 
@@ -30,6 +31,10 @@ class Floor:
             display_str += row.display(time)
             
         return display_str
+    
+    def display_pygame(self, time, windowSurf):
+        for row in self.rows:
+            row.display_pygame(time, windowSurf)
     
     def set_active(self, pitch, time):
         self.rows[pitch].set_active(time) 
@@ -55,6 +60,10 @@ class Row:
         for tile in self.tiles:
             display_str += tile.display(time)            
         return display_str + "\n"
+    
+    def display_pygame(self, time, windowSurf):
+        for tile in self.tiles:
+            tile.display_pygame(windowSurf)
             
         
         
@@ -64,6 +73,8 @@ class Tile:
         self.time = time
         self.pitch = pitch
         self.is_active = False
+        self.active_color = pygame.Color(200, 200, 200)
+        self.inactive_color = pygame.Color(100, 100, 100)
         
     def set_active(self):
         self.is_active = True
@@ -80,7 +91,12 @@ class Tile:
         else:
             return "[ ]"
         
-
+    def display_pygame(self, windowSurf):
+        """ Display for pygame
+        """
+        cur_color = self.active_color if self.is_active else self.inactive_color
+        pygame.draw.rect(windowSurf, cur_color, 
+                        (self.time*55+10, self.pitch*55+10, 50, 50))
 
 
 if __name__ == "__main__":
@@ -97,26 +113,34 @@ if __name__ == "__main__":
     windowSurf = pygame.display.set_mode((640, 480))
     while True:
         windowSurf.fill(pygame.Color(255,255,255))
-        pygame.draw.polygon(windowSurf, pygame.Color(0, 255, 0), ((146, 0), 
-                                                                  (291, 106), 
-                                                                  (236, 277), 
-                                                                  (56, 277), 
-                                                                  (0, 106)))
-        pixArray = pygame.PixelArray(windowSurf)
-        for x in range(100, 200, 4):
-            for y in range(100, 200, 4):
-                pixArray[x][y] = pygame.Color(255, 0, 0)
+        # To make an arbitrary polygon
+        #pygame.draw.polygon(windowSurf, pygame.Color(0, 255, 0), ((146, 0), 
+        #                                                          (291, 106), 
+        #                                                          (236, 277), 
+        #                                                          (56, 277), 
+        #                                                          (0, 106)))
+        #
+        ##########################This display section works to build the grid!
+        floor.display_pygame(0, windowSurf)
+        #for i in range(0, 8):
+        #    for j in range(0, 8):
+        #        pygame.draw.rect(windowSurf, pygame.Color(100, 100, 100), 
+        #                        (i*55+10, j*55+10, 50, 50))
+            
+        # For drawing individual pixels
+        #pixArray = pygame.PixelArray(windowSurf)
+        #for x in range(100, 200, 4):
+        #    for y in range(100, 200, 4):
+        #        pixArray[x][y] = pygame.Color(255, 0, 0)
                 
-        del pixArray
+        #del pixArray
         
         
         for event in pygame.event.get():
-            pass
-            #if event.type == pygame.locals.QUIT:
-            #    pygame.quit()
-            #    sys.exit()
-        
-        print sys.version 
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+         
         
         pygame.display.update()
     

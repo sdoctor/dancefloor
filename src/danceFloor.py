@@ -96,6 +96,8 @@ if __name__ == "__main__":
     
     windowSurf = pygame.display.set_mode((640, 480))
     windowSurf.fill(pygame.Color(255,255,255))
+    pygame.draw.polygon(windowSurf, pygame.Color(0,255,0), ((146,0), (291,106), (236,277), (56,277), (0,106)))
+    
     
     
     import sys
